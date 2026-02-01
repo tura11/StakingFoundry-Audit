@@ -65,7 +65,11 @@ contract StakingDappTest is Test {
         vm.stopPrank();
 
         uint256 newStake = stakingDapp.s_stakes(user);
-        assertEq(newStake, initialStake + stakeAmount, "User's stake should increase by the staked amount");
+        assertEq(
+            newStake,
+            initialStake + stakeAmount,
+            "User's stake should increase by the staked amount"
+        );
     }
 
     function testUnstake() public {
@@ -108,12 +112,18 @@ contract StakingDappTest is Test {
 
         vm.warp(block.timestamp + 90 days);
 
-        uint256 expectedReward = (((stakeAmount * 5) / 100) * (90 days)) / 365 days;
+        uint256 expectedReward = (((stakeAmount * 5) / 100) * (90 days)) /
+            365 days;
         vm.startPrank(user3);
         uint256 reward = stakingDapp.getReward(user3);
         vm.stopPrank();
 
-        assertApproxEqAbs(reward, expectedReward, 1e14, "Incorrect reward calculation");
+        assertApproxEqAbs(
+            reward,
+            expectedReward,
+            1e14,
+            "Incorrect reward calculation"
+        );
     }
 
     function testOwnerCannotUnstakeOtherUsersFunds() public {
@@ -140,7 +150,11 @@ contract StakingDappTest is Test {
         stakingDapp.addStake{value: 1 ether}();
         vm.stopPrank();
 
-        assertEq(stakingDapp.s_stakes(user), initialStake, "User's stake should not increase");
+        assertEq(
+            stakingDapp.s_stakes(user),
+            initialStake,
+            "User's stake should not increase"
+        );
     }
 
     function testRewardAfterMinStakeTime() public {
@@ -153,7 +167,8 @@ contract StakingDappTest is Test {
 
         vm.warp(block.timestamp + stakingDuration + 1 days);
 
-        uint256 expectedReward = (stakeAmount * 5 * stakingDuration) / (100 * 365 days);
+        uint256 expectedReward = (stakeAmount * 5 * stakingDuration) /
+            (100 * 365 days);
 
         vm.startPrank(user2);
         uint256 reward = stakingDapp.getReward(user2);
@@ -163,7 +178,10 @@ contract StakingDappTest is Test {
         console.log("Expected Reward: ", expectedReward);
 
         uint256 tolerance = 150000000000000;
-        assertTrue(abs(int256(reward) - int256(expectedReward)) <= tolerance, "Reward calculation is incorrect.");
+        assertTrue(
+            abs(int256(reward) - int256(expectedReward)) <= tolerance,
+            "Reward calculation is incorrect."
+        );
     }
 
     function testContractBalance() public {
@@ -177,14 +195,22 @@ contract StakingDappTest is Test {
         uint256 expectedBalance = initialBalance + stakeAmount;
 
         uint256 currentBalance = address(stakingDapp).balance;
-        assertEq(currentBalance, expectedBalance, "Contract balance is incorrect.");
+        assertEq(
+            currentBalance,
+            expectedBalance,
+            "Contract balance is incorrect."
+        );
     }
 
     function testStakeAndGetStakeInfo() public {
         vm.prank(user2);
         stakingDapp.stake{value: 1 ether}();
 
-        (uint256 stakedAmount, uint256 reward, uint256 stakingTime) = stakingDapp.userGetStakeInfo(user2);
+        (
+            uint256 stakedAmount,
+            uint256 reward,
+            uint256 stakingTime
+        ) = stakingDapp.userGetStakeInfo(user2);
 
         assertEq(stakedAmount, 1 ether, "Staked amount should be 1 ether");
 
