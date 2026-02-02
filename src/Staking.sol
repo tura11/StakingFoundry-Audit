@@ -120,7 +120,7 @@ contract StakingDapp is ReentrancyGuard {
     ) public pure returns (uint256) { //audit-high there is no ERC20 to stake so there is nothing to reward
         uint256 yearlyReward;
 
-        if (_duration <= 30 days) {
+        if (_duration <= 30 days) { //audit-medium all this logic in incorrect, what if someone stake for 91days, he will get 5% yearly??
             yearlyReward = (_amount * 2) / 100; // 2% yearly
         } else if (_duration <= 90 days) {
             yearlyReward = (_amount * 5) / 100; // 5% yearly
@@ -131,7 +131,7 @@ contract StakingDapp is ReentrancyGuard {
         } else if (_duration <= 730 days) {
             yearlyReward = (_amount * 15) / 100; // 15% yearly
         } else {
-            yearlyReward = (_amount * 20) / 100; // 20% yearly
+            yearlyReward = (_amount * 20) / 100; // 20% yearly 
         }
 
         uint256 reward = (yearlyReward * _duration) / 365 days;
