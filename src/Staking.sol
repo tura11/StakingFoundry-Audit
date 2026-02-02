@@ -96,7 +96,7 @@ contract StakingDapp is ReentrancyGuard {
             s_stakesTimeStamps[msg.sender];
 
         uint256 reward = calculateReward(stakedAmount, stakingDuration);
-        if (stakingDuration < minStakeTime) {
+        if (stakingDuration < minStakeTime) { //audit-high this line will never be executed bcs of require, require statement assume you are after minStakeTime
             uint256 penalty = (reward * EARLY_WITHDRAW_PENALTY) / 100;
             reward -= penalty;
         }
