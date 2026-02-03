@@ -114,7 +114,7 @@ contract StakingDapp is ReentrancyGuard {
         emit Unstaked(msg.sender, stakedAmount, reward);
     }
 
-    function calculateReward( 
+    function calculateReward( //q this function calculates for 2 params?? it does not take users stake amount and staking duration??
         uint256 _amount,
         uint256 _duration
     ) public pure returns (uint256) { //audit-high there is no ERC20 to stake so there is nothing to reward
@@ -138,8 +138,8 @@ contract StakingDapp is ReentrancyGuard {
         return reward;
     }
 
-    function setMinStakeTime(uint256 _time) public onlyOwner {
-        require(_time >= 7 days, "Minimum stake time too low");
+    function setMinStakeTime(uint256 _time) public onlyOwner {// could be private for gas efficiency
+        require(_time >= 7 days, "Minimum stake time too low"); // its function for chaning stake time whats the reason for require here?? 
         minStakeTime = _time;
     }
 
@@ -153,7 +153,7 @@ contract StakingDapp is ReentrancyGuard {
         return (s_stakes[_user], getReward(_user), s_stakesTimeStamps[_user]);
     }
 
-    function depositRewards() external payable onlyOwner {}
+    function depositRewards() external payable onlyOwner {} // ??
 
     function getOwner() external view returns (address) {
         return owner;
