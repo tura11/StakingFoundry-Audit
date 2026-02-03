@@ -61,7 +61,7 @@ contract StakingDapp is ReentrancyGuard {
         emit Paused(paused);
     }
 
-    function stake() public payable notPaused hasEnoughETH(MIN_VALUE) {
+    function stake() public payable notPaused hasEnoughETH(MIN_VALUE) {  //audit-low could be external for gass efficiency
         s_stakes[msg.sender] += msg.value;
         s_stakesTimeStamps[msg.sender] = block.timestamp;
         emit Staked(msg.sender, msg.value);
@@ -73,7 +73,7 @@ contract StakingDapp is ReentrancyGuard {
         notPaused
         hasEnoughETH(MIN_VALUE)
         hasStaked
-    {
+    { //audit-low could be external for gass efficiency
         s_stakes[msg.sender] += msg.value;
         s_stakesTimeStamps[msg.sender] = block.timestamp; //audit-critial this function reseting the timestamp
         emit Staked(msg.sender, msg.value);
