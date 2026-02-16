@@ -5,8 +5,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 contract StakingDapp is ReentrancyGuard {
     address public owner;
-   
-    uint256 public s_minStakeTime = 30 days;
+    uint256 public s_minStakeTime = 30 days; //audit-gas should be constant
     bool public paused = false;
 
     
@@ -88,7 +87,7 @@ contract StakingDapp is ReentrancyGuard {
 
     function unstake() public hasStaked nonReentrant {
         require(
-            block.timestamp >= s_stakesTimeStamps[msg.sender] + minStakeTime,
+            block.timestamp >= s_stakesTimeStamps[msg.sender] + s_minStakeTime,
             "Staking duration is too short"
         );
         uint256 stakedAmount = s_stakes[msg.sender];
@@ -96,7 +95,7 @@ contract StakingDapp is ReentrancyGuard {
             s_stakesTimeStamps[msg.sender];
 
         uint256 reward = calculateReward(stakedAmount, stakingDuration);
-        if (stakingDuration < minStakeTime) { //audit-high this line will never be executed bcs of require, require statement assume you are after minStakeTime
+        if (stakingDuration < s_minStakeTime) { //audit-high this line will never be executed bcs of require, require statement assume you are after minStakeTime
             uint256 penalty = (reward * EARLY_WITHDRAW_PENALTY) / 100;
             reward -= penalty;
         }
@@ -109,7 +108,7 @@ contract StakingDapp is ReentrancyGuard {
             address(this).balance >= totalAmount,
             "Not enough contract balance"
         );
-        payable(msg.sender).transfer(totalAmount);
+        payable(msg.sender).transfer(totalAmount); //audit-medium what if the user doesnt have receive or fallback function?
 
         emit Unstaked(msg.sender, stakedAmount, reward);
     }
@@ -121,7 +120,7 @@ contract StakingDapp is ReentrancyGuard {
         uint256 yearlyReward;
 
         if (_duration <= 30 days) { //audit-medium all this logic in incorrect, what if someone stake for 91days, he will get 5% yearly??
-            yearlyReward = (_amount * 2) / 100; // 2% yearly
+            yearlyReward = (_amount * 2) / 100; // 2% yearly //audit-informational, prefers use name for variable 100 like precision or smth
         } else if (_duration <= 90 days) {
             yearlyReward = (_amount * 5) / 100; // 5% yearly
         } else if (_duration <= 180 days) {
@@ -140,7 +139,8 @@ contract StakingDapp is ReentrancyGuard {
 
     function setMinStakeTime(uint256 _time) public onlyOwner {// could be private for gas efficiency
         require(_time >= 7 days, "Minimum stake time too low"); // its function for chaning stake time whats the reason for require here?? 
-        minStakeTime = _time;
+        s_minStakeTime = _time;
+        //audit-inromational wheres the event?
     }
 
     function userGetStakeInfo(

@@ -37,7 +37,7 @@ contract StakingDappTest is Test {
     }
 
     function testMinStakeTime() public {
-        uint256 minStake = stakingDapp.minStakeTime();
+        uint256 minStake = stakingDapp.s_minStakeTime();
         assertEq(minStake, 30 days);
     }
 
