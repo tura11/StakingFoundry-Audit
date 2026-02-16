@@ -133,7 +133,7 @@ contract StakingDapp is ReentrancyGuard {
             yearlyReward = (_amount * 20) / 100; // 20% yearly 
         }
 
-        uint256 reward = (yearlyReward * _duration) / 365 days;
+        uint256 reward = (yearlyReward * _duration) / 365 days; //audit-informational, prefers use name for variable 365 like precision or smth
         return reward;
     }
 
@@ -153,7 +153,7 @@ contract StakingDapp is ReentrancyGuard {
         return (s_stakes[_user], getReward(_user), s_stakesTimeStamps[_user]);
     }
 
-    function depositRewards() external payable onlyOwner {} // ??
+    function depositRewards() external payable onlyOwner {} // audit-gas what is this?
 
     function getOwner() external view returns (address) {
         return owner;
